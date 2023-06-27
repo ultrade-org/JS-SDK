@@ -19,53 +19,6 @@ const pool_1 = require("./artifacts/pool");
 const stable_1 = require("./artifacts/stable");
 const constants_1 = require("./constants");
 const utils_1 = require("./utils");
-const createAlgorandClient = (type, cluster, params) => {
-    let server = '';
-    let port = '';
-    let token = '';
-    if (type === constants_1.ClientType.Algod) {
-        if (params) {
-            server = params.server || '';
-            port = params.port || '';
-            token = params.token || '';
-            return new algosdk_1.default.Algodv2(token, server, port);
-        }
-        switch (cluster) {
-            case constants_1.Node.TESTNET:
-                server = 'https://node.testnet.algoexplorerapi.io';
-                break;
-            case constants_1.Node.BETANET:
-                server = 'https://node.betanet.algoexplorerapi.io';
-                break;
-            case constants_1.Node.MAINNET:
-                server = 'https://node.mainnet.algoexplorerapi.io';
-                break;
-            default:
-                server = 'http://localhost';
-                port = '4001';
-                token =
-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-        }
-        return new algosdk_1.default.Algodv2(token, server, port);
-    }
-    else {
-        switch (cluster) {
-            case constants_1.Node.TESTNET:
-                server = 'https://algoindexer.testnet.algoexplorerapi.io';
-                break;
-            case constants_1.Node.BETANET:
-                server = 'https://algoindexer.betanet.algoexplorerapi.io';
-                break;
-            case constants_1.Node.MAINNET:
-                server = 'https://algoindexer.algoexplorerapi.io';
-                break;
-            default:
-                server = 'http://localhost';
-                port = '8980';
-        }
-        return new algosdk_1.default.Indexer(token, server, port);
-    }
-};
 class PendingTxnResponse {
     constructor(response) {
         this.poolError = response['pool-error'];
@@ -91,9 +44,8 @@ class AmmClient {
      * @param appId master app id
      * @param cluster one of node
      */
-    constructor(appId, cluster, params) {
-        this.client = createAlgorandClient(constants_1.ClientType.Algod, cluster, params);
-        this.indexer = createAlgorandClient(constants_1.ClientType.Indexer, cluster);
+    constructor(appId, client) {
+        this.client = client;
         this.appId = appId;
         this.masterContract = new algosdk_1.default.ABIContract(master_1.MASTER_ABI);
         this.poolContract = new algosdk_1.default.ABIContract(pool_1.POOL_ABI);
@@ -195,7 +147,7 @@ class AmmClient {
                 const appCreator = appInfo.params.creator;
                 atc.addMethodCall({
                     appID: this.appId,
-                    method: getMethodByName(this.masterContract, 'create_pool'),
+                    method: (0, utils_1.getMethodByName)(this.masterContract, 'create_pool'),
                     methodArgs: [
                         {
                             txn: algosdk_1.default.makePaymentTxnWithSuggestedParamsFromObject({
@@ -282,7 +234,7 @@ class AmmClient {
                     atc.addMethodCall({
                         sender,
                         appID: poolId,
-                        method: getMethodByName(this.poolContract, 'fund'),
+                        method: (0, utils_1.getMethodByName)(this.poolContract, 'fund'),
                         methodArgs: [
                             {
                                 txn: algosdk_1.default.makePaymentTxnWithSuggestedParamsFromObject({
@@ -314,10 +266,10 @@ class AmmClient {
                 else {
                     let method;
                     if (sf1 && sf2) {
-                        method = getMethodByName(this.stableContract, 'fund');
+                        method = (0, utils_1.getMethodByName)(this.stableContract, 'fund');
                     }
                     else {
-                        method = getMethodByName(this.poolContract, 'fund');
+                        method = (0, utils_1.getMethodByName)(this.poolContract, 'fund');
                     }
                     atc.addMethodCall({
                         sender,
@@ -358,7 +310,7 @@ class AmmClient {
                     atc.addMethodCall({
                         sender,
                         appID: poolId,
-                        method: getMethodByName(this.poolContract, 'mint'),
+                        method: (0, utils_1.getMethodByName)(this.poolContract, 'mint'),
                         methodArgs: [
                             {
                                 txn: algosdk_1.default.makePaymentTxnWithSuggestedParamsFromObject({
@@ -392,7 +344,7 @@ class AmmClient {
                     let method;
                     let methodArgs;
                     if (sf1 && sf2) {
-                        method = getMethodByName(this.stableContract, 'mint');
+                        method = (0, utils_1.getMethodByName)(this.stableContract, 'mint');
                         methodArgs = [aAmt, bAmt, mintAmt];
                         if (aAmt == 0) {
                             methodArgs.push({
@@ -442,7 +394,7 @@ class AmmClient {
                         }
                     }
                     else {
-                        method = getMethodByName(this.poolContract, 'mint');
+                        method = (0, utils_1.getMethodByName)(this.poolContract, 'mint');
                         methodArgs = [
                             {
                                 txn: algosdk_1.default.makeAssetTransferTxnWithSuggestedParamsFromObject({
@@ -507,10 +459,10 @@ class AmmClient {
             const sf2 = yield this.isStableAsset(poolState['b']);
             let method;
             if (sf1 && sf2) {
-                method = getMethodByName(this.poolContract, 'burn');
+                method = (0, utils_1.getMethodByName)(this.poolContract, 'burn');
             }
             else {
-                method = getMethodByName(this.stableContract, 'burn');
+                method = (0, utils_1.getMethodByName)(this.stableContract, 'burn');
             }
             const atc = new algosdk_1.default.AtomicTransactionComposer();
             atc.addMethodCall({
@@ -579,7 +531,7 @@ class AmmClient {
                 atc.addMethodCall({
                     sender,
                     appID: poolId,
-                    method: getMethodByName(this.poolContract, 'swap'),
+                    method: (0, utils_1.getMethodByName)(this.poolContract, 'swap'),
                     methodArgs: [
                         {
                             txn: algosdk_1.default.makePaymentTxnWithSuggestedParamsFromObject({
@@ -610,7 +562,7 @@ class AmmClient {
                 atc.addMethodCall({
                     sender,
                     appID: poolId,
-                    method: getMethodByName(this.poolContract, 'swap'),
+                    method: (0, utils_1.getMethodByName)(this.poolContract, 'swap'),
                     methodArgs: [
                         {
                             txn: algosdk_1.default.makeAssetTransferTxnWithSuggestedParamsFromObject({
@@ -769,7 +721,7 @@ class AmmClient {
             for (const app of createdApps) {
                 const poolId = app['id'];
                 const stateArray = app['params']['global-state'];
-                const poolState = decodeStateArray(stateArray);
+                const poolState = (0, utils_1.decodeStateArray)(stateArray);
                 const aId = poolState['a'];
                 const bId = poolState['b'];
                 const poolToken = poolState['p'];
@@ -1166,7 +1118,7 @@ class AmmClient {
         return __awaiter(this, void 0, void 0, function* () {
             const appInfo = yield this.client.getApplicationByID(poolId).do();
             const stateArray = appInfo['params']['global-state'];
-            const state = decodeStateArray(stateArray);
+            const state = (0, utils_1.decodeStateArray)(stateArray);
             return state;
         });
     }
@@ -1183,7 +1135,7 @@ class AmmClient {
             createdApps.forEach((app) => {
                 const id = app['id'];
                 const stateArray = app['params']['global-state'];
-                const state = decodeStateArray(stateArray);
+                const state = (0, utils_1.decodeStateArray)(stateArray);
                 states[id] = state;
             });
             return states;
@@ -1303,7 +1255,7 @@ class AmmClient {
         return __awaiter(this, void 0, void 0, function* () {
             const appInfo = yield this.client.getApplicationByID(this.appId).do();
             const stateArray = appInfo['params']['global-state'];
-            const state = decodeStateArray(stateArray);
+            const state = (0, utils_1.decodeStateArray)(stateArray);
             return state;
         });
     }
@@ -1335,30 +1287,3 @@ class AmmClient {
     }
 }
 exports.AmmClient = AmmClient;
-function getMethodByName(contract, name) {
-    const m = contract.methods.find((mt) => {
-        return mt.name == name;
-    });
-    if (m === undefined)
-        throw Error('Method undefined: ' + name);
-    return m;
-}
-function decodeStateArray(stateArray) {
-    const state = {};
-    stateArray.forEach((pair) => {
-        const key = Buffer.from(pair['key'], 'base64');
-        let value = pair['value'];
-        const valueType = value['type'];
-        if (valueType == 2)
-            value = value['uint'];
-        if (valueType == 1)
-            value = Buffer.from(value['bytes']);
-        if (key.toString() == 'gov') {
-            state['gov'] = algosdk_1.default.encodeAddress(value);
-        }
-        else {
-            state[key.toString()] = value;
-        }
-    });
-    return state;
-}

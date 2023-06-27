@@ -35,11 +35,6 @@ export interface AssetList {
 export interface PoolList {
     [key: string]: TokenPair;
 }
-export interface InstanceParams {
-    server?: string;
-    token?: string;
-    port?: string;
-}
 export interface PoolState {
     a: number;
     b: number;
