@@ -1,5 +1,5 @@
 {
-  "name": "@ultrade/ultrade-sdk",
+  "name": "@ultrade/ultrade-js-sdk",
   "version": "0.2.3",
   "description": "Javascript SDK for interaction with the Ultrade AMM system",
   "main": "dist/index.js",
