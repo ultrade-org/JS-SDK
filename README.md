@@ -1,5 +1,7 @@
 # Ultrade JS SDK
 
+## Warning
+SDK is under development
 ## Structure of SDK
 
 Three are three classes: `AmmClient`, `TransactionComposer`, `PendingTxnResponse`.
@@ -33,3 +35,5 @@ utils:
 
 Please checkout unit tests in `tests` folder.
 
+## License
+MIT
