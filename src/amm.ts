@@ -2,7 +2,15 @@ import algosdk from 'algosdk';
 import { MASTER_ABI } from './artifacts/master';
 import { POOL_ABI } from './artifacts/pool';
 import { STABLE_ABI } from './artifacts/stable';
-import { AssetList, IAssetAmt, PoolList, PoolState, TokenPair } from './types';
+import {
+    AssetList,
+    IAssetAmt,
+    PoolList,
+    PoolState,
+    TokenPair,
+    PoolTypes,
+    StablePoolState
+} from './types';
 import { ALGO } from './constants';
 import { sqrt, decodeStateArray, getMethodByName } from './utils';
 
@@ -798,7 +806,9 @@ export class AmmClient {
                 bUnitName: bb.params['unit-name'],
                 poolId,
                 poolToken,
-                poolState
+                poolState,
+                type: poolState['pt'] || 'CONSTANT_PRODUCT',
+                fee: poolState['f'] || 20
             };
             this.poolsCache[cachedId] = pair;
             return pair;
@@ -818,10 +828,14 @@ export class AmmClient {
         for (const app of createdApps) {
             const poolId = app['id'];
             const stateArray = app['params']['global-state'];
-            const poolState = decodeStateArray(stateArray);
+            const poolState = decodeStateArray(stateArray) as
+                | PoolState
+                | StablePoolState;
             const aId = poolState['a'];
             const bId = poolState['b'];
             const poolToken = poolState['p'];
+            const type: PoolTypes = poolState['pt'] || 'CONSTANT_PRODUCT';
+            const fee = poolState['f'] || 20;
             const cachedId = String(aId) + String(bId);
             const cachedPool = this.poolsCache[cachedId];
             if (cachedPool) {
@@ -851,7 +865,9 @@ export class AmmClient {
                     bUnitName: assetB.params['unit-name'],
                     poolToken,
                     poolId,
-                    poolState
+                    poolState,
+                    fee,
+                    type: type
                 };
                 pools.push(pool);
                 this.poolsCache[cachedId] = pool;
@@ -1247,7 +1263,7 @@ export class AmmClient {
      * @param poolId id of pool
      * @returns
      */
-    async getPoolState(poolId: number): Promise<PoolState> {
+    async getPoolState(poolId: number): Promise<PoolState | StablePoolState> {
         const appInfo = await this.client.getApplicationByID(poolId).do();
         const stateArray = appInfo['params']['global-state'];
 

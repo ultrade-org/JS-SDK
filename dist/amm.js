@@ -700,7 +700,9 @@ class AmmClient {
                     bUnitName: bb.params['unit-name'],
                     poolId,
                     poolToken,
-                    poolState
+                    poolState,
+                    type: poolState['pt'] || 'CONSTANT_PRODUCT',
+                    fee: poolState['f'] || 20
                 };
                 this.poolsCache[cachedId] = pair;
                 return pair;
@@ -725,6 +727,8 @@ class AmmClient {
                 const aId = poolState['a'];
                 const bId = poolState['b'];
                 const poolToken = poolState['p'];
+                const type = poolState['pt'] || 'CONSTANT_PRODUCT';
+                const fee = poolState['f'] || 20;
                 const cachedId = String(aId) + String(bId);
                 const cachedPool = this.poolsCache[cachedId];
                 if (cachedPool) {
@@ -756,7 +760,9 @@ class AmmClient {
                         bUnitName: assetB.params['unit-name'],
                         poolToken,
                         poolId,
-                        poolState
+                        poolState,
+                        fee,
+                        type: type
                     };
                     pools.push(pool);
                     this.poolsCache[cachedId] = pool;

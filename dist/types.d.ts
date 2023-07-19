@@ -1,3 +1,4 @@
+export type PoolTypes = 'STABLE' | 'CONSTANT_PRODUCT';
 export type IAssetAmt = {
     assetA: bigint;
     assetB: bigint;
@@ -14,6 +15,8 @@ export interface TokenPair {
     poolId: number;
     poolToken: number;
     poolState: PoolState;
+    fee: number;
+    type: PoolTypes;
 }
 export interface IndexerAssetParams {
     creator: string;
@@ -38,11 +41,17 @@ export interface PoolList {
 export interface PoolState {
     a: number;
     b: number;
-    fo: number;
+    set: number;
     ra: number;
     rb: number;
-    set: number;
-    p: number;
-    gov: string;
     ma: number;
+    f?: number;
+    p: number;
+    pt?: PoolTypes;
+    gov: string;
+}
+export interface StablePoolState extends PoolState {
+    ad: number;
+    bd: number;
+    amp: number;
 }

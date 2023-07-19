@@ -1,5 +1,5 @@
 import algosdk from 'algosdk';
-import { AssetList, IAssetAmt, PoolList, PoolState, TokenPair } from './types';
+import { AssetList, IAssetAmt, PoolList, PoolState, TokenPair, StablePoolState } from './types';
 export declare class PendingTxnResponse {
     poolError: string;
     txn: Record<string, any>;
@@ -38,7 +38,7 @@ export declare class AmmClient {
      *
      * @returns
      */
-    getStatus(): Promise<any>;
+    getStatus(): Promise<Record<string, any>>;
     /**
      * check if an asset is stable coin.
      *
@@ -50,7 +50,7 @@ export declare class AmmClient {
      *
      * @returns
      */
-    getTransactionParams(): Promise<any>;
+    getTransactionParams(): Promise<import("algosdk/dist/types/types/transactions/base").SuggestedParamsWithMinFee>;
     /**
      * returns Algodv2 instance.
      *
@@ -65,7 +65,11 @@ export declare class AmmClient {
      * @param assetB
      * @returns
      */
-    createPair(sender: string, assetA: number, assetB: number, signer: algosdk.TransactionSigner): Promise<any>;
+    createPair(sender: string, assetA: number, assetB: number, signer: algosdk.TransactionSigner): Promise<{
+        confirmedRound: number;
+        txIDs: string[];
+        methodResults: algosdk.ABIResult[];
+    }>;
     /**
      * Add liquidity to A-B pool
      *
@@ -77,7 +81,11 @@ export declare class AmmClient {
      * @param mintAmt
      * @returns
      */
-    addLiquidity(sender: string, aId: number, aAmt: number | bigint, bId: number, bAmt: number | bigint, mintAmt: number | bigint, signer: algosdk.TransactionSigner): Promise<any>;
+    addLiquidity(sender: string, aId: number, aAmt: number | bigint, bId: number, bAmt: number | bigint, mintAmt: number | bigint, signer: algosdk.TransactionSigner): Promise<{
+        confirmedRound: number;
+        txIDs: string[];
+        methodResults: algosdk.ABIResult[];
+    }>;
     /**
      * remove liquidity from the pool
      *
@@ -88,7 +96,11 @@ export declare class AmmClient {
      * @param bMinAmt
      * @returns
      */
-    removeLiquidity(sender: string, poolId: number, poolTokenAmt: number | bigint, aMinAmt: number | bigint, bMinAmt: number | bigint, signer: algosdk.TransactionSigner): Promise<any>;
+    removeLiquidity(sender: string, poolId: number, poolTokenAmt: number | bigint, aMinAmt: number | bigint, bMinAmt: number | bigint, signer: algosdk.TransactionSigner): Promise<{
+        confirmedRound: number;
+        txIDs: string[];
+        methodResults: algosdk.ABIResult[];
+    }>;
     /**
      * swap tokens
      *
@@ -98,7 +110,11 @@ export declare class AmmClient {
      * @param outId asset id of output
      * @returns
      */
-    swap(sender: string, inId: number, inAmt: number | bigint, outId: number, slippage: number, signer: algosdk.TransactionSigner): Promise<any>;
+    swap(sender: string, inId: number, inAmt: number | bigint, outId: number, slippage: number, signer: algosdk.TransactionSigner): Promise<{
+        confirmedRound: number;
+        txIDs: string[];
+        methodResults: algosdk.ABIResult[];
+    }>;
     /**
      * get LP token by asset A and B
      *
@@ -183,7 +199,7 @@ export declare class AmmClient {
      * @param txId transaction id
      * @returns
      */
-    getAmountAfterSwap(txId: string): Promise<any>;
+    getAmountAfterSwap(txId: string): Promise<number>;
     /**
      * Get liquidity token amounts
      *
@@ -202,7 +218,7 @@ export declare class AmmClient {
      * @param assetBAmt amount of asset B to send the A-B pool
      * @returns int
      */
-    getMintAmtByState(state: PoolState, assetAAmt: number | bigint, assetBAmt: number | bigint): number | bigint;
+    getMintAmtByState(state: PoolState, assetAAmt: number | bigint, assetBAmt: number | bigint): bigint;
     /**
      * Make opt-in for asset/pool
      *
@@ -211,7 +227,11 @@ export declare class AmmClient {
      * @param signer transaction signer
      * @returns
      */
-    prepareOptInTxn(sender: string, assetId: number, signer: algosdk.TransactionSigner): Promise<any>;
+    prepareOptInTxn(sender: string, assetId: number, signer: algosdk.TransactionSigner): Promise<{
+        confirmedRound: number;
+        txIDs: string[];
+        methodResults: algosdk.ABIResult[];
+    }>;
     /**
      * Get assets amounts after pool token burn
      *
@@ -229,8 +249,8 @@ export declare class AmmClient {
      * @returns
      */
     getAssetAmtAfterBurnLPByState(state: PoolState, burnAmt: number): {
-        assetA: number;
-        assetB: number;
+        assetA: bigint;
+        assetB: bigint;
     };
     /**
      * get input amount from output when a user swap A to B
@@ -250,7 +270,7 @@ export declare class AmmClient {
      * @param state pool state
      * @returns
      */
-    getSwapInputByState(assetIn: number, assetOut: number, state: PoolState, amtOut: number | bigint): any;
+    getSwapInputByState(assetIn: number, assetOut: number, state: PoolState, amtOut: number | bigint): bigint;
     /**
      * get pool ratio
      * @param assetIn id of asset A
@@ -277,7 +297,7 @@ export declare class AmmClient {
      * @param poolId id of pool
      * @returns
      */
-    getPoolState(poolId: number): Promise<PoolState>;
+    getPoolState(poolId: number): Promise<PoolState | StablePoolState>;
     /**
      * Get all pool states
      * @returns
@@ -314,8 +334,8 @@ export declare class AmmClient {
         swapInput: bigint;
     }>;
     getSwapResultsByState(inId: number, outId: number, state: PoolState, amount: number | bigint): {
-        swapOutput: number;
-        swapInput: number;
+        swapOutput: bigint;
+        swapInput: bigint;
     };
     private getTmpPoolId;
     private getTmpStablePoolId;
