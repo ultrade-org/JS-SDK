@@ -45,8 +45,7 @@ export function decodeStateArray(stateArray: any[]) {
         if (key.toString() == 'gov') {
             state['gov'] = encodeAddress(value);
         } else if (key.toString() == 'pt') {
-            state['pt'] = value.toString();
-            console.log('POOL TYPE DECODED', value.toString());
+            state['pt'] = atob(value.toString());
         } else {
             state[key.toString()] = value;
         }

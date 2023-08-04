@@ -41,6 +41,9 @@ function decodeStateArray(stateArray) {
         if (key.toString() == 'gov') {
             state['gov'] = (0, algosdk_1.encodeAddress)(value);
         }
+        else if (key.toString() == 'pt') {
+            state['pt'] = atob(value.toString());
+        }
         else {
             state[key.toString()] = value;
         }
