@@ -500,7 +500,7 @@ export class AmmClient {
                     suggestedParams: {
                         ...sp,
                         flatFee: true,
-                        fee: 2000
+                        fee: 3000
                     },
                     signer
                 });
