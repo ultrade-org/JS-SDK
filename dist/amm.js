@@ -334,7 +334,7 @@ class AmmClient {
                             mintAmt
                         ],
                         appForeignAssets: [bId, poolToken],
-                        suggestedParams: Object.assign(Object.assign({}, sp), { flatFee: true, fee: 2000 }),
+                        suggestedParams: Object.assign(Object.assign({}, sp), { flatFee: true, fee: 4000 }),
                         signer
                     });
                     const res = yield atc.execute(this.client, 4);
@@ -425,7 +425,7 @@ class AmmClient {
                         method,
                         methodArgs,
                         appForeignAssets: [aId, bId, poolToken],
-                        suggestedParams: Object.assign(Object.assign({}, sp), { flatFee: true, fee: 2000 }),
+                        suggestedParams: Object.assign(Object.assign({}, sp), { flatFee: true, fee: 4000 }),
                         signer
                     });
                     const res = yield atc.execute(this.client, 4);

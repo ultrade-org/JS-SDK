@@ -397,7 +397,7 @@ export class AmmClient {
                     suggestedParams: {
                         ...sp,
                         flatFee: true,
-                        fee: 2000
+                        fee: 4000
                     },
                     signer
                 });
@@ -500,7 +500,7 @@ export class AmmClient {
                     suggestedParams: {
                         ...sp,
                         flatFee: true,
-                        fee: 3000
+                        fee: 4000
                     },
                     signer
                 });
